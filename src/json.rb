@@ -22,17 +22,13 @@ module JSON
       hash.each{|k,v| symbolized_hash[k.to_sym] = v}
       symbolized_hash
     when '""' then parse_string(input)
-    when 'true' then true
-    when 'false' then false
-    when 'null' then nil
     else
-      if !input.match(/[^eE0-9\.+-]/)
-        result = case input.count(".")
-        when 0 then input.to_i
-        when 1 then input.to_f
-        end
+      case input
+      when 'true' then true
+      when 'false' then false
+      when 'null' then nil
       else
-        raise "JSON could not parse #{input}"
+        parse_numeric(input)
       end
     end
     result
@@ -102,4 +98,14 @@ module JSON
     }
     buffer.empty? ? [] : result.push(parse(buffer))
   end
+
+  def self.parse_numeric(input)(input)
+    raise "JSON could not parse #{input}" if input.match(/[^eE0-9\.+-]/)
+    case input.count(".")
+    when 0 then input.to_i
+    when 1 then input.to_f
+    end
+  end
+
+
 end
